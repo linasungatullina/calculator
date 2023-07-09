@@ -8,32 +8,32 @@ import (
 func main() {
 	str1, str2, operation, err := scan()
 	if err != nil {
-		fmt.Println("произошла ошибка:", err)
+		fmt.Println("Произошла ошибка:", err)
 		return
 	}
 
 	num1, num2, isRome, err := parse(str1, str2)
 	if err != nil {
-		fmt.Println("произошла ошибка:", err)
+		fmt.Println("Произошла ошибка:", err)
 		return
 	}
 
 	err = validate(num1, num2)
 	if err != nil {
-		fmt.Println("произошла ошибка:", err)
+		fmt.Println("Произошла ошибка:", err)
 		return
 	}
 
 	result, err := calculate(num1, num2, operation)
 	if err != nil {
-		fmt.Println("произошла ошибка:", err)
+		fmt.Println("Произошла ошибка:", err)
 		return
 	}
 
 	if isRome == true {
 		resultRome, err := resultInRome(result)
 		if err != nil {
-			fmt.Println("произошла ошибка:", err)
+			fmt.Println("Произошла ошибка:", err)
 			return
 		}
 		fmt.Println(resultRome)
@@ -44,9 +44,13 @@ func main() {
 
 }
 
-func scan() (a, b, c string, err error) {
-	_, err = fmt.Scanf("%s %s %s\n", &a, &c, &b)
-	return a, b, c, err
+func scan() (str1, str2, operation string, err error) {
+	_, err = fmt.Scanf("%s %s %s\n", &str1, &operation, &str2)
+	if err != nil {
+		return str1, str2, operation, fmt.Errorf("недопустимый формат операции. Поддерживаются операции с двумя операндами и одним оператором (+, -, /, *)")
+	}
+
+	return str1, str2, operation, nil
 }
 
 func parse(str1, str2 string) (num1, num2 int, isRome bool, err error) {
@@ -57,7 +61,7 @@ func parse(str1, str2 string) (num1, num2 int, isRome bool, err error) {
 
 	num2, err = strconv.Atoi(str2)
 	if err != nil {
-		return num1, num2, false, err
+		return num1, num2, false, fmt.Errorf("разные системы счисления")
 	}
 
 	return num1, num2, false, nil
@@ -71,7 +75,7 @@ func parseRome(str1, str2 string) (num1, num2 int, isRome bool, err error) {
 
 	num2, err = parseOneRome(str2)
 	if err != nil {
-		return num1, num2, true, err
+		return num1, num2, true, fmt.Errorf("недопустимая операция")
 	}
 
 	return num1, num2, true, nil
@@ -100,7 +104,7 @@ func parseOneRome(str string) (num int, err error) {
 	case "X":
 		return 10, nil
 	default:
-		return 0, fmt.Errorf("не удалось распознать число")
+		return 0, fmt.Errorf("недопустимое число")
 	}
 }
 
@@ -144,5 +148,6 @@ func resultInRome(result int) (resultRome string, err error) {
 	te := tens[result/10%10]
 	o := ones[result%10]
 
-	return h + te + o, nil
+	resultRome = h + te + o
+	return resultRome, nil
 }
